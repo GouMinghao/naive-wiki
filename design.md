@@ -60,4 +60,25 @@
 - docs: 映射，每一条都是：string -> docid, offset, length
 - forward index: 编码格式如上
 - inverted index:编码如上
-        
+    
+```python
+tf = [
+    {0:2, 3:5 .....} # doc 0
+    {1:3, 3:1 .....} # doc 1
+    ...
+    {         .....} # doc n
+]
+
+# tf[d][t] is the term frequency for term 't' in document 'd'.
+
+df = [3, 5, 0 ,4 ...] # df[t] is the document frequency for term 't'.
+
+dl = [123,43,2354 ...] # dl[d] is the number of terms in document 'd'.
+
+avgdl = np.array(dl).mean() # avgdl is the average number of terms in all the documents.
+
+# BM25 score
+# https://blog.csdn.net/zhoubl668/article/details/7321012
+
+```
+
