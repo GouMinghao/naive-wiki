@@ -3,7 +3,6 @@ STATE_OUTSIDE = 0
 STATE_INSIDE = 1
 import os
 import re
-import dill
 import pickle
 
 class text_file(object):
