@@ -1,4 +1,4 @@
-DICT_DUMP_DIR = '__DICT_PKL__'
+DUMP_DIR = '__PKL__'
 STATE_OUTSIDE = 0
 STATE_INSIDE = 1
 import os
@@ -58,11 +58,11 @@ class wiki_xmlhandler(object):
 
         - tuple:(doc_list,docid_dic)
         '''
-        if not os.path.exists(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl'))):
+        if not os.path.exists(os.path.join(DUMP_DIR,self.file_name.replace('.xml','.pkl'))):
             print('No dumped file available, gen_dict is called')
             return self.gen_dict()
         else: 
-            print('Loading dumped file from {}'.format(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl'))))
+            print('Loading dumped file from {}'.format(os.path.join(DUMP_DIR,self.file_name.replace('.xml','.pkl'))))
             return self.load_dump()
 
     def gen_dict(self):
@@ -120,9 +120,9 @@ class wiki_xmlhandler(object):
                     continue
         f.close()
         print('\nFile parsing finished, number of docs:{}'.format(id))
-        if not os.path.exists(os.path.join(DICT_DUMP_DIR)):
-            os.mkdir(os.path.join(DICT_DUMP_DIR))
-        dump_file = open(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl')),'wb')
+        if not os.path.exists(os.path.join(DUMP_DIR)):
+            os.mkdir(os.path.join(DUMP_DIR))
+        dump_file = open(os.path.join(DUMP_DIR,self.file_name.replace('.xml','.pkl')),'wb')
         pickle.dump([doc_list,docid_dic],dump_file)
         dump_file.close()
         return doc_list,docid_dic
@@ -138,7 +138,7 @@ class wiki_xmlhandler(object):
 
         - dic[1]: dict of {title:id}
         '''
-        f = open(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl')),'rb')
+        f = open(os.path.join(DUMP_DIR,self.file_name.replace('.xml','.pkl')),'rb')
         dic = pickle.load(f)
         f.close()
         return dic[0],dic[1]
@@ -211,14 +211,11 @@ class wiki_xmlhandler(object):
         else:
             return redirect.get('title')
     
-    def get_link_doc_id_list(self,id_or_title):
-        pass
-    
-    def get_plain_wiki_text(self,id_or_title):
+    def get_plain_wiki_text_and_link(self,id_or_title):
         wiki_text = self.get_wiki_text(id_or_title)
 
         doc_dict = dict()
-        link_list= []
+        link_set= set()
 
         p_double_middle = re.compile(r'\[\[(.*?)\]\]',re.DOTALL)        
         double_middle_list = re.findall(p_double_middle,wiki_text)
@@ -226,14 +223,14 @@ class wiki_xmlhandler(object):
             for title in double_middle.split('|'):
                 doc_id = self.docid_dic.get(title)
                 if doc_id is not None:
-                    link_list.append(doc_id)
+                    link_set.add(doc_id)
             wiki_text = wiki_text.replace('[[{}]]'.format(double_middle),'')
        
         double_middle_list = re.findall(p_double_middle,wiki_text)
         for double_middle in double_middle_list:
             wiki_text = wiki_text.replace('[[{}]]'.format(double_middle),'')
 
-        doc_dict['link_list']=link_list
+        doc_dict['link_set']=link_set
 
         p_double_bracket = re.compile(r'\{\{(.*?)\}\}',re.DOTALL)    
         double_bracket_list = re.findall(p_double_bracket,wiki_text)
@@ -259,15 +256,12 @@ class wiki_xmlhandler(object):
         doc_dict['text']=wiki_text
         return doc_dict
 
-    def get_title_text(self,id_or_title):
-        pass
-
 if __name__ == '__main__':
-    main_wiki_xmlhandler = wiki_xmlhandler('pages.xml')
+    main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
     print('===================Lincoln===================')
     # print(main_wiki_xmlhandler.get_redirect('Abraham Lincoln'))
     # print(main_wiki_xmlhandler.get_wiki_text('Abraham Lincoln'))
-    print(main_wiki_xmlhandler.get_plain_wiki_text('Aristotle'))
+    print(main_wiki_xmlhandler.get_plain_wiki_text_and_link('Aristotle'))
     # print('===================AfghanistanHistory===================')
     # print(main_wiki_xmlhandler.get_redirect(2))
     # print(main_wiki_xmlhandler.get_wiki_text(2))

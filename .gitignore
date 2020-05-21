@@ -1,7 +1,9 @@
-/__DICT_PKL__/
+/__PKL__/
 /resources/dictionary/
+/__pycache__/
 abstract.xml
 pages.xml
 pages_sample.xml
 dump_test.py
 *.pyc
+/.vscode/

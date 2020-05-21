@@ -2,16 +2,21 @@
 # authour: wang xi
 
 """Termer for a sentence."""
+DUMP_DIR = '__PKL__'
 
 from typing import List, Sequence
 import pickle
 import string
 import re
+import os
 
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 from nltk.corpus import stopwords
+
+if not os.path.exists(DUMP_DIR):
+    os.mkdir(DUMP_DIR)
 
 class Termer(object):
     """Termer for a sentence. It includes three phases, 
@@ -38,7 +43,7 @@ class Termer(object):
             stem_type: PorterStemmer, Lemmatizer
         """
         self.include_stopword = include_stopword
-        nltk.data.path.append("./resources/nltk_data")
+        nltk.data.path.append(os.path.join('resources','nltk_data'))
 
         if stem_type == "PorterStemmer":
             self.stemmer = PorterStemmer().stem
@@ -63,16 +68,18 @@ class Termer(object):
         ret = self._tokens_to_terms(tokens)
         return ret
     
-    def serialize_dictionary(self, terms_id: str, id_terms: str):
+    def serialize_dictionary(self, dic_dir: str ,terms_id: str, id_terms: str):
         """Serialize the dictionary to files.
         
         Args:
             terms_id: file name for terms to term ids mapping
             id_terms: file name for term ids to terms mapping
         """
-        with open(terms_id, 'wb') as f:
+        if not os.path.exists(dic_dir):
+            os.mkdir(dic_dir)
+        with open(os.path.join(dic_dir,terms_id), 'wb') as f:
             pickle.dump(self.term_dict, f)
-        with open(id_terms, 'wb') as f:
+        with open(os.path.join(dic_dir,id_terms), 'wb') as f:
             pickle.dump(self.termid_to_term, f)
 
     def _tokenize(self, sentence: str) -> List[str]:
@@ -120,9 +127,8 @@ if __name__ == "__main__":
     termer = Termer(False)
     term_ids = termer.to_terms(sentence)
     term_ids2 = termer.to_terms(s2)
-    print(term_ids)
     print(term_ids2)
     print(term_ids)
     print(termer.term_dict)
-    dict_path = './resources/dictionary/'
-    termer.serialize_dictionary(dict_path+"term_file.pkl", dict_path+"termid_file.pkl")
+    dict_path = os.path.join(DUMP_DIR,'dictionary')
+    termer.serialize_dictionary(dict_path,"term_file.pkl","termid_file.pkl")

@@ -77,6 +77,12 @@ dl = [123,43,2354 ...] # dl[d] is the number of terms in document 'd'.
 
 avgdl = np.array(dl).mean() # avgdl is the average number of terms in all the documents.
 
+link_list = [
+    {1,2,4,6...},
+    {2,3,4...},
+    ...
+    {...}
+]
 # BM25 score
 # https://blog.csdn.net/zhoubl668/article/details/7321012
 
