@@ -115,9 +115,13 @@ class Termer(object):
 
 
 if __name__ == "__main__":
-    sentence = " This is good. Today is raining."
+    sentence = " This is good. \n\n ??  '''' | Today is raining."
+    s2 = "This is not so good. do you think so?"
     termer = Termer(False)
     term_ids = termer.to_terms(sentence)
+    term_ids2 = termer.to_terms(s2)
+    print(term_ids)
+    print(term_ids2)
     print(term_ids)
     print(termer.term_dict)
     dict_path = './resources/dictionary/'

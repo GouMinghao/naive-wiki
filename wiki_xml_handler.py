@@ -4,6 +4,7 @@ STATE_INSIDE = 1
 import os
 import re
 import pickle
+import xml.etree.ElementTree as ET
 
 class text_file(object):
     '''
@@ -60,7 +61,7 @@ class wiki_xmlhandler(object):
         if not os.path.exists(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl'))):
             print('No dumped file available, gen_dict is called')
             return self.gen_dict()
-        else:
+        else: 
             print('Loading dumped file from {}'.format(os.path.join(DICT_DUMP_DIR,self.file_name.replace('.xml','.pkl'))))
             return self.load_dump()
 
@@ -152,9 +153,12 @@ class wiki_xmlhandler(object):
 
         - string of the doc xml content
         '''
-        [title,offset,length] = self.doc_list[id]
-        return read_text_with_offset_and_length(self.file_name,offset,length)
-    
+        if id < len(self.doc_list):
+            [title,offset,length] = self.doc_list[id]
+            return read_text_with_offset_and_length(self.file_name,offset,length)
+        else:
+            return None
+
     def get_doc_title(self,title):
         '''
         ** Input: **
@@ -165,8 +169,11 @@ class wiki_xmlhandler(object):
 
         - string of the doc xml content
         '''
-        id = self.docid_dic[title]
-        return self.get_doc_id(id)
+        id = self.docid_dic.get(title)
+        if id is not None:
+            return self.get_doc_id(id)
+        else:
+            return None
 
     def get_doc(self,id_or_title):
         '''
@@ -187,10 +194,80 @@ class wiki_xmlhandler(object):
             return self.get_doc_title(title)
         else:
             raise ValueError('get doc must be called with int or str, but the given type is:{}'.format(type(id_or_title)))
+    
+    def get_wiki_text(self,id_or_title):
+        doc = self.get_doc(id_or_title)
+        root = ET.fromstring(doc)
+        revision = root.find('revision')
+        wikitext = revision.find('text').text
+        return wikitext
+    
+    def get_redirect(self,id_or_title):
+        doc = self.get_doc(id_or_title)
+        root = ET.fromstring(doc)
+        redirect = root.find('redirect')
+        if redirect is None:
+            return None
+        else:
+            return redirect.get('title')
+    
+    def get_link_doc_id_list(self,id_or_title):
+        pass
+    
+    def get_plain_wiki_text(self,id_or_title):
+        wiki_text = self.get_wiki_text(id_or_title)
+
+        doc_dict = dict()
+        link_list= []
+
+        p_double_middle = re.compile(r'\[\[(.*?)\]\]',re.DOTALL)        
+        double_middle_list = re.findall(p_double_middle,wiki_text)
+        for double_middle in double_middle_list:
+            for title in double_middle.split('|'):
+                doc_id = self.docid_dic.get(title)
+                if doc_id is not None:
+                    link_list.append(doc_id)
+            wiki_text = wiki_text.replace('[[{}]]'.format(double_middle),'')
+       
+        double_middle_list = re.findall(p_double_middle,wiki_text)
+        for double_middle in double_middle_list:
+            wiki_text = wiki_text.replace('[[{}]]'.format(double_middle),'')
+
+        doc_dict['link_list']=link_list
+
+        p_double_bracket = re.compile(r'\{\{(.*?)\}\}',re.DOTALL)    
+        double_bracket_list = re.findall(p_double_bracket,wiki_text)
+        for double_bracket in double_bracket_list:
+            wiki_text = wiki_text.replace('{{'+double_bracket+'}}','')
+
+        p_single_middle = re.compile(r'\[(.*?)\]',re.DOTALL)    
+        single_middle_list = re.findall(p_single_middle,wiki_text)
+
+        for single_middle in single_middle_list:
+            wiki_text = wiki_text.replace('['+single_middle+']','')
+
+        p_single_bracket = re.compile(r'\{(.*?)\}',re.DOTALL)    
+        single_bracket_list = re.findall(p_single_bracket,wiki_text)
+        for single_bracket in single_bracket_list:
+            wiki_text = wiki_text.replace('{'+single_bracket+'}','')
+
+        p_line = re.compile(r'\n[\*\|].*\n')
+        line_list = re.findall(p_line,wiki_text)
+        for line in line_list:
+            wiki_text = wiki_text.replace(line.replace('\n',''),'')
+
+        doc_dict['text']=wiki_text
+        return doc_dict
+
+    def get_title_text(self,id_or_title):
+        pass
 
 if __name__ == '__main__':
-    main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
+    main_wiki_xmlhandler = wiki_xmlhandler('pages.xml')
     print('===================Lincoln===================')
-    print(main_wiki_xmlhandler.get_doc('Abraham Lincoln'))
-    print('===================AfghanistanHistory===================')
-    print(main_wiki_xmlhandler.get_doc(2))
+    # print(main_wiki_xmlhandler.get_redirect('Abraham Lincoln'))
+    # print(main_wiki_xmlhandler.get_wiki_text('Abraham Lincoln'))
+    print(main_wiki_xmlhandler.get_plain_wiki_text('Aristotle'))
+    # print('===================AfghanistanHistory===================')
+    # print(main_wiki_xmlhandler.get_redirect(2))
+    # print(main_wiki_xmlhandler.get_wiki_text(2))
