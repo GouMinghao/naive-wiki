@@ -4,3 +4,4 @@ abstract.xml
 pages.xml
 pages_sample.xml
 dump_test.py
+*.pyc
