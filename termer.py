@@ -26,13 +26,13 @@ class Termer(object):
     The whole process generally includes
     removing stop words, stemming or lemmatization.
 
-    A new term will be inserted into term_dict.
+    A new term will be inserted into term2id_dict.
 
     Attributes:
         include_stopword: include stopwords or not
         stemmer: used to stem the tokens
-        term_dict: store the term dictionary, mapping from str -> int
-        termid_to_term: mapping from int -> str
+        term2id_dict: store the term dictionary, mapping from str -> int
+        id2term_dict: mapping from int -> str
         g_term_max_id: currently allocated max term id 
     """
 
@@ -49,8 +49,8 @@ class Termer(object):
             self.stemmer = PorterStemmer().stem
         elif stem_type == "Lemmatizer":
             self.stemmer = WordNetLemmatizer().lemmatize
-        self.term_dict = dict()
-        self.termid_to_term = dict()
+        self.term2id_dict = dict()
+        self.id2term_dict = dict()
         self.g_term_max_id = 0
         self.punctuations = '[0-9’!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+'
 
@@ -68,7 +68,7 @@ class Termer(object):
         ret = self._tokens_to_terms(tokens)
         return ret
     
-    def serialize_dictionary(self, dic_dir: str ,terms_id: str, id_terms: str):
+    def serialize_dictionary(self, dic_dir: str ,terms_id: str, id_terms: str, xml_file_name = 'test'):
         """Serialize the dictionary to files.
         
         Args:
@@ -77,10 +77,10 @@ class Termer(object):
         """
         if not os.path.exists(dic_dir):
             os.mkdir(dic_dir)
-        with open(os.path.join(dic_dir,terms_id), 'wb') as f:
-            pickle.dump(self.term_dict, f)
-        with open(os.path.join(dic_dir,id_terms), 'wb') as f:
-            pickle.dump(self.termid_to_term, f)
+        with open(os.path.join(dic_dir,xml_file_name+'_'+terms_id), 'wb') as f:
+            pickle.dump(self.term2id_dict, f)
+        with open(os.path.join(dic_dir,xml_file_name+'_'+id_terms), 'wb') as f:
+            pickle.dump(self.id2term_dict, f)
 
     def _tokenize(self, sentence: str) -> List[str]:
         """ Transform a sentence into a list of tokens.
@@ -111,14 +111,18 @@ class Termer(object):
         ret = []
         for t in tokens:
             term = self.stemmer(t)
-            if term in self.term_dict:
-                ret.append(self.term_dict[term])
+            if term in self.term2id_dict:
+                ret.append(self.term2id_dict[term])
             else:
-                self.g_term_max_id += 1
-                self.term_dict[term] = self.g_term_max_id
-                self.termid_to_term[self.g_term_max_id] = term
+                self.term2id_dict[term] = self.g_term_max_id
+                self.id2term_dict[self.g_term_max_id] = term
                 ret.append(self.g_term_max_id)
+                self.g_term_max_id += 1
         return ret
+    
+    def get_number_of_terms(self):
+        return len(self.term2id_dict)
+
 
 
 if __name__ == "__main__":
@@ -129,6 +133,7 @@ if __name__ == "__main__":
     term_ids2 = termer.to_terms(s2)
     print(term_ids2)
     print(term_ids)
-    print(termer.term_dict)
+    print(termer.term2id_dict)
+    print(termer.id2term_dict)
     dict_path = os.path.join(DUMP_DIR,'dictionary')
-    termer.serialize_dictionary(dict_path,"term_file.pkl","termid_file.pkl")
+    termer.serialize_dictionary(dict_path,"term2id.pkl","id2term.pkl")

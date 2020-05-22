@@ -258,10 +258,6 @@ class wiki_xmlhandler(object):
 
 if __name__ == '__main__':
     main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
-    print('===================Lincoln===================')
-    # print(main_wiki_xmlhandler.get_redirect('Abraham Lincoln'))
-    # print(main_wiki_xmlhandler.get_wiki_text('Abraham Lincoln'))
-    print(main_wiki_xmlhandler.get_plain_wiki_text_and_link('Aristotle'))
-    # print('===================AfghanistanHistory===================')
-    # print(main_wiki_xmlhandler.get_redirect(2))
-    # print(main_wiki_xmlhandler.get_wiki_text(2))
+    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link('Aristotle')
+    print(doc_dict['text'])
+    print(doc_dict['link_set'])
