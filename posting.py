@@ -148,6 +148,8 @@ class Posting_handler(object):
         - link_set: a set of doc ids which are link by this document
         '''
         doc_dict = self.xml_handler.get_plain_wiki_text_and_link(id_or_title)
+        if doc_dict is None:
+            return ([],set())
         plain_wiki_text = doc_dict['text']
         link_set = doc_dict['link_set']
         # print(plain_wiki_text)
@@ -278,7 +280,7 @@ class Posting_handler(object):
             return None
 
 if __name__ == '__main__':
-    ph = Posting_handler('pages_sample.xml')
+    ph = Posting_handler('pages.xml')
     print('-------------------------------------------------')
     
     # the term frequency for term with id = 1151 in doc with id = 2

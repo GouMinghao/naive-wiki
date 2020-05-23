@@ -213,6 +213,8 @@ class wiki_xmlhandler(object):
     
     def get_plain_wiki_text_and_link(self,id_or_title):
         wiki_text = self.get_wiki_text(id_or_title)
+        if wiki_text is None:
+            return None
 
         doc_dict = dict()
         link_set= set()
@@ -257,7 +259,7 @@ class wiki_xmlhandler(object):
         return doc_dict
 
 if __name__ == '__main__':
-    main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
-    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link('Aristotle')
+    main_wiki_xmlhandler = wiki_xmlhandler('pages.xml')
+    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(338340)
     print(doc_dict['text'])
     print(doc_dict['link_set'])
