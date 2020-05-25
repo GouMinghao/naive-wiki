@@ -259,7 +259,7 @@ class wiki_xmlhandler(object):
         return doc_dict
 
 if __name__ == '__main__':
-    main_wiki_xmlhandler = wiki_xmlhandler('pages.xml')
-    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(338340)
+    main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
+    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(2)
     print(doc_dict['text'])
     print(doc_dict['link_set'])

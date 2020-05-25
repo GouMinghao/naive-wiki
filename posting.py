@@ -242,7 +242,10 @@ class Posting_handler(object):
         for i in range(self.num_doc):
             print('\r[%d/%d]:   %.3f%%' % (i+1,self.num_doc,(i+1)/self.num_doc * 100),end='')
             doc_dict = self.xml_handler.get_plain_wiki_text_and_link(i)
-            link_list.append(doc_dict['link_set'])
+            if doc_dict is None:
+                link_list.append(set())
+            else:
+                link_list.append(doc_dict['link_set'])
         print('')
         f = open(link_file_name,'wb')
         pickle.dump(link_list,f)
