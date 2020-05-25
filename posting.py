@@ -283,7 +283,7 @@ class Posting_handler(object):
             return None
 
 if __name__ == '__main__':
-    ph = Posting_handler('pages.xml')
+    ph = Posting_handler('pages_sample.xml')
     print('-------------------------------------------------')
     
     # the term frequency for term with id = 1151 in doc with id = 2
