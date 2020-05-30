@@ -13,7 +13,7 @@ import os
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer, WordNetLemmatizer
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, words, names
 
 if not os.path.exists(DUMP_DIR):
     os.mkdir(DUMP_DIR)
@@ -52,7 +52,7 @@ class Termer(object):
         self.term2id_dict = dict()
         self.id2term_dict = dict()
         self.g_term_max_id = 0
-        self.punctuations = '[0-9’!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+'
+        self.pattern = re.compile(r"^[a-zA-Z][a-zA-Z']+$")
 
     def to_terms(self, sentence: str) -> List[int]:
         """Transform a sentence into a list of terms and add
@@ -64,7 +64,7 @@ class Termer(object):
         Returns:
             a list of term ids
         """
-        tokens = self._tokenize(re.sub(self.punctuations, '', sentence))
+        tokens = self._tokenize(sentence)
         ret = self._tokens_to_terms(tokens)
         return ret
     
@@ -93,7 +93,7 @@ class Termer(object):
             a list of term string
         """        
         tokens = word_tokenize(sentence)
-        tokens = [t for t in tokens if t not in self.punctuations]
+        tokens = [t.lower() for t in tokens if len(t) < 25 and self.pattern.match(t)]
         
         if self.include_stopword == True:
             return tokens
@@ -126,14 +126,21 @@ class Termer(object):
 
 
 if __name__ == "__main__":
-    sentence = " This is good. \n\n ??  '''' | Today is raining."
-    s2 = "This is not so good. do you think so?"
+    sentence = " This is good. \n\n ??  '''' | Today is raining. looooooooooooooooooooooooooooooooong"
+    s2 = "This is not so good. do you think so? Pünktlich Zug"
     termer = Termer(False)
     term_ids = termer.to_terms(sentence)
+    print(term_ids)
+
     term_ids2 = termer.to_terms(s2)
     print(term_ids2)
-    print(term_ids)
+    
     print(termer.term2id_dict)
     print(termer.id2term_dict)
-    dict_path = os.path.join(DUMP_DIR,'dictionary')
-    termer.serialize_dictionary(dict_path,"term2id.pkl","id2term.pkl")
+    with open("pages_sample.xml", 'r', encoding='utf-8') as f:
+        text = f.read()
+        tid = termer.to_terms(text)
+        #print(tid)
+    print(termer.term2id_dict)
+    #dict_path = os.path.join(DUMP_DIR,'dictionary')
+    #termer.serialize_dictionary(dict_path,"term2id.pkl","id2term.pkl")
