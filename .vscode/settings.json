@@ -3,6 +3,7 @@
     "Jaccard",
     "P",
     "Pünktlich",
+    "astype",
     "avgdl",
     "lemmatization",
     "lemmatize",
@@ -11,6 +12,7 @@
     "net",
     "nktlich",
     "nltk",
+    "numpy",
     "punkt",
     "word"
   ]
