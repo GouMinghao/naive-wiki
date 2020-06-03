@@ -267,7 +267,7 @@ class Posting_handler(object):
         for i in range(self.num_doc):
             print('\r[%d/%d]:   %.3f%%' % (i+1,self.num_doc,(i+1)/self.num_doc * 100),end='')
             for term_id in tf_list[i]:
-                df_list[term_id] += tf_list[i][term_id]
+                df_list[term_id] += 1
 
         print('')
 
