@@ -359,7 +359,7 @@ class Posting_handler(object):
         posting_list_file_name = os.path.join(DUMP_DIR,self.file_name+POSTING_LIST_FILENAME_POSTFIX)
         posting_list = Array_List(posting_list_file_name)
         for term_id in range(num_term):
-            posting_list.insert_array(np.array(temp_posting_list[term_id]))
+            posting_list.insert_array(np.array(temp_posting_list[term_id],dtype=np.uint32))
         posting_list.save_file()
         return posting_list
 
