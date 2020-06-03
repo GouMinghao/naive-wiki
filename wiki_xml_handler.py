@@ -232,7 +232,7 @@ class wiki_xmlhandler(object):
         for double_middle in double_middle_list:
             wiki_text = wiki_text.replace('[[{}]]'.format(double_middle),'')
 
-        doc_dict['link_set']=link_set
+        doc_dict['link_list']=list(link_set)
 
         p_double_bracket = re.compile(r'\{\{(.*?)\}\}',re.DOTALL)    
         double_bracket_list = re.findall(p_double_bracket,wiki_text)
@@ -260,6 +260,6 @@ class wiki_xmlhandler(object):
 
 if __name__ == '__main__':
     main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
-    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(2)
+    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(68)
     print(doc_dict['text'])
-    print(doc_dict['link_set'])
+    print(doc_dict['link_list'])
