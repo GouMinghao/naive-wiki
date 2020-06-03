@@ -239,6 +239,8 @@ class Posting_handler(object):
             f = open(id2term_file_name,'rb')
             id2term_dict = pickle.load(f)
             f.close()
+            self.termer.term2id_dict = term2id_dict
+            self.termer.id2term_dict = id2term_dict
             return tf_list,df_list,dl_list,term2id_dict,id2term_dict
 
     def gen_tf_df_dl_term(self):
@@ -381,7 +383,7 @@ if __name__ == '__main__':
     print('\033[0;34mThe inversed document frequency of the term with id=1151:\033[0m\n%f' % ph.idf(1151)) # recommended
 
     # the link set for doc with id = 68
-    print('\033[0;34mThe link set for doc with id = 68:\033[0m\n{}'.format(ph.link_list(68)))
+    print('\033[0;34mThe link list for doc with id = 68:\033[0m\n{}'.format(ph.link_list(68)))
 
     # the length of document with id = 69
     print('\033[0;34mThe length of document with id = 69:\033[0m\n%d' % (ph.dl(69)))
@@ -401,3 +403,4 @@ if __name__ == '__main__':
     # the posting list for term with id=1151
     print("\033[0;34mThe posting list for the term whose id is 1151:\033[0m\n{}".format(ph.posting_list(1151)))
     
+    print(ph.termer.to_terms('boys girls'))
