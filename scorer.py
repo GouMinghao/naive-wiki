@@ -86,7 +86,7 @@ class Scorer(object):
         for term_id in query:
             tf = 1 + math.log(1 + self.ph.tf(doc_id, term_id))
             idf = math.log(self.ph.idf(term_id))
-            score += tf * idf
+            score += (tf * idf)
         return score
 
     def cosine_similarity_score(self, query: List[int], doc_id: int) -> float:
@@ -137,7 +137,7 @@ class Scorer(object):
             K = k1 * (1 - b + b * self.ph.dl(doc_id) / self.ph.avgdl)
             R = tf * (k1 + 1) / (tf + K)
 
-            idf = self.ph.dl(doc_id)
+            idf = self.ph.idf(doc_id)
             score += R * idf
         return score
 

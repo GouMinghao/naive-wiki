@@ -7,10 +7,14 @@
 from typing import List, Sequence
 import math
 import queue
+from functools import reduce
+import re
 
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
+
+import numpy as np
 
 from posting import Posting_handler
 from scorer import Scorer
@@ -31,9 +35,10 @@ class Searcher(object):
         self.scorer = Scorer(ph)
         self.total_docs = ph.num_doc
         self.ph = ph
+        self.pattern = re.compile(r"^[a-zA-Z][a-zA-Z']+$")
         
 
-    def search(self, query: str, method: str = "cosine_similarity", top_k: int = 10) -> List[int]:
+    def search(self, query: str, method: str = "tf-idf", top_k: int = 10) -> List[int]:
         """Search the documents for the given query.
 
         Args:
@@ -93,8 +98,8 @@ class Searcher(object):
             a list of terms' id for the query string
         """
         tokens = word_tokenize(query)
-        punctuations = '[0-9’!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+'
-        tokens = [t for t in tokens if t not in punctuations]
+        tokens = [t.lower() for t in tokens if len(t) < 25 and self.pattern.match(t)]
+        
 
         stop_words = set(stopwords.words('english'))
         query = []
@@ -111,7 +116,16 @@ class Searcher(object):
     def _get_matched_docs(self, query: List[int]) -> List[int]:
         """Return matched docs' id according to the query.
         """
-        res = []
+        #res = []
+        
+        postings = []
+        for q in query:
+            #print('\033[0;34mThe term whose id is %d:\033[0m\n%s' % (q, self.ph.get_term_by_id(q)))
+            #print(self.ph.posting_list(q))
+            postings.append(self.ph.posting_list(q))
+        #res = reduce(np.intersect1d, postings)
+        res = reduce(np.union1d, postings)
+        """
         for d in range(self.total_docs):
             is_matched = True
             for q in query:
@@ -120,6 +134,7 @@ class Searcher(object):
                     break
             if is_matched == True:
                 res.append(d)
+        """
         return res
 
 
@@ -129,7 +144,7 @@ if __name__ == "__main__":
     ph = Posting_handler('pages_sample.xml')
     print('-------------------------------------------------')
 
-    query = "histories"
+    query = "boys and girls"
     searcher = Searcher(ph)
     print(searcher.search(query))
 
