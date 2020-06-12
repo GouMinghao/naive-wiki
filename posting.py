@@ -368,39 +368,39 @@ class Posting_handler(object):
 
 
 if __name__ == '__main__':
-    ph = Posting_handler('pages_sample.xml')
+    ph = Posting_handler('pages.xml')
     print('-------------------------------------------------')
     
-    # the term frequency for term with id = 1151 in doc with id = 2
-    print('\033[0;34mThe term frequency for term with id = 1151 in doc with id = 2:\033[0m\n%d' % ph.tf(doc_id = 2,term_id=1151))
-    print('\033[0;34mThe term frequency for term with id = 1151 in doc with id = 10:\033[0m\n%d' % ph.tf(doc_id = 10,term_id=1151))
+    # the term frequency for term with id = 1700 in doc with id = 2
+    print('\033[0;34mThe term frequency for term with id = 1700 in doc with id = 2:\033[0m\n%d' % ph.tf(doc_id = 2,term_id=1700))
+    print('\033[0;34mThe term frequency for term with id = 1700 in doc with id = 3:\033[0m\n%d' % ph.tf(doc_id = 3,term_id=1700))
 
-    # the document frequency of the term with id=1151
-    print('\033[0;34mThe document frequency of the term with id=1151:\033[0m\n%d' % ph.df_list[1151])
-    print('\033[0;34mThe document frequency of the term with id=1151:\033[0m\n%d' % ph.df(1151)) # recommended
+    # the document frequency of the term with id=1700
+    print('\033[0;34mThe document frequency of the term with id=1700:\033[0m\n%d' % ph.df_list[1700])
+    print('\033[0;34mThe document frequency of the term with id=1700:\033[0m\n%d' % ph.df(1700)) # recommended
 
-    # the document frequency of the term with id=1151
-    print('\033[0;34mThe inversed document frequency of the term with id=1151:\033[0m\n%f' % ph.idf(1151)) # recommended
+    # the document frequency of the term with id=1700
+    print('\033[0;34mThe inversed document frequency of the term with id=1700:\033[0m\n%f' % ph.idf(1700)) # recommended
 
-    # the link set for doc with id = 68
-    print('\033[0;34mThe link list for doc with id = 68:\033[0m\n{}'.format(ph.link_list(68)))
+    # the link set for doc with id = 2
+    print('\033[0;34mThe link list for doc with id = 2:\033[0m\n{}'.format(ph.link_list(2)))
 
-    # the length of document with id = 69
-    print('\033[0;34mThe length of document with id = 69:\033[0m\n%d' % (ph.dl(69)))
+    # the length of document with id = 3
+    print('\033[0;34mThe length of document with id = 3:\033[0m\n%d' % (ph.dl(3)))
     
     # the average document length
     print('\033[0;34mThe average document length:\033[0m\n%f' % ph.avgdl)
 
-    # the term whose id is 1151
-    print('\033[0;34mThe term whose id is 1151:\033[0m\n%s' % ph.get_term_by_id(1151))
+    # the term whose id is 1700
+    print('\033[0;34mThe term whose id is 1700:\033[0m\n%s' % ph.get_term_by_id(1700))
     
     # the term id for 'redirect'
-    print("\033[0;34mThe term id for 'redirect':\033[0m\n%d" % ph.get_id_by_term('redirect'))
+    print("\033[0;34mThe term id for 'redirect':\033[0m\n%d" % ph.get_id_by_term('boy'))
 
     # the posting list for 'redirect'
-    print("\033[0;34mThe posting list for 'redirect':\033[0m\n{}".format(ph.posting_list(ph.get_id_by_term('redirect'))))
+    print("\033[0;34mThe posting list for 'redirect':\033[0m\n{}".format(ph.posting_list(ph.get_id_by_term('boy'))))
 
-    # the posting list for term with id=1151
-    print("\033[0;34mThe posting list for the term whose id is 1151:\033[0m\n{}".format(ph.posting_list(1151)))
+    # the posting list for term with id=1700
+    print("\033[0;34mThe posting list for the term whose id is 1700:\033[0m\n{}".format(ph.posting_list(1700)))
     
     print(ph.termer.to_terms('boys girls'))

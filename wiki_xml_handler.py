@@ -103,21 +103,25 @@ class wiki_xmlhandler(object):
 
                     seek_ptr = f.tell()
                     page_xml = f.read(length)
-                    after_ptr = f.tell()
-                    assert after_ptr - seek_ptr == length
+                    if self.is_redirect(page_xml):
+                        state = STATE_OUTSIDE
+                        continue
+                    else:
+                        after_ptr = f.tell()
+                        assert after_ptr - seek_ptr == length
 
-                    p = re.compile(r'<title>(.*?)</title>',re.DOTALL)
-                    title_list = re.findall(p,page_xml)
-                    assert(len(title_list) == 1)
-                    title = title_list[0]
-                    print('\rProcessing: [%6.4f%%] id=%d' % (f.tell() / total_length * 100,id),end='')
-                    # print(f.tell(),id)
-                    doc_list.append([title,offset,length])
-                    docid_dic[title] = id
-                    id += 1
-                    # print(title_list[0].replace('<title>','').replace('</title>',''))
-                    state = STATE_OUTSIDE
-                    continue
+                        p = re.compile(r'<title>(.*?)</title>',re.DOTALL)
+                        title_list = re.findall(p,page_xml)
+                        assert(len(title_list) == 1)
+                        title = title_list[0]
+                        print('\rProcessing: [%6.4f%%] id=%d' % (f.tell() / total_length * 100,id),end='')
+                        # print(f.tell(),id)
+                        doc_list.append([title,offset,length])
+                        docid_dic[title] = id
+                        id += 1
+                        # print(title_list[0].replace('<title>','').replace('</title>',''))
+                        state = STATE_OUTSIDE
+                        continue
         f.close()
         print('\nFile parsing finished, number of docs:{}'.format(id))
         if not os.path.exists(os.path.join(DUMP_DIR)):
@@ -202,6 +206,14 @@ class wiki_xmlhandler(object):
         wikitext = revision.find('text').text
         return wikitext
     
+    def is_redirect(self,wiki_text):
+        root = ET.fromstring(wiki_text)
+        redirect = root.find('redirect')
+        if redirect is None:
+            return False
+        else:
+            return True
+
     def get_redirect(self,id_or_title):
         doc = self.get_doc(id_or_title)
         root = ET.fromstring(doc)
@@ -260,6 +272,6 @@ class wiki_xmlhandler(object):
 
 if __name__ == '__main__':
     main_wiki_xmlhandler = wiki_xmlhandler('pages_sample.xml')
-    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(68)
+    doc_dict = main_wiki_xmlhandler.get_plain_wiki_text_and_link(4)
     print(doc_dict['text'])
     print(doc_dict['link_list'])
