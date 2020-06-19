@@ -1,3 +1,4 @@
+# author: Minghao Gou
 import os
 import numpy as np
 class Array_List(object):
