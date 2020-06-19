@@ -97,8 +97,8 @@ class Posting_handler(object):
         self.num_doc = len(self.xml_handler.doc_list)
         print('\033[0;33mRetrieving TF, DF, DL and Termer\033[0m')
         self.tf_list, self.df_list, self.dl_list, self.term2id_dict, self.id2term_dict = self.get_tf_df_dl_term() # list of dicts, np.array, np.array, dict, dict
-        print('\033[0;33mRetrieving Link\033[0m')
-        self.linklist = self.get_link_list() # list of sets
+        print('\033[0;33mRetrieving Posting List\033[0m')
+        # self.linklist = self.get_link_list() # list of sets
         self.postinglist = self.get_posting_list()
         self.avgdl = self.get_avgdl()
 
@@ -338,37 +338,87 @@ class Posting_handler(object):
     def get_posting_list(self):
         posting_list_file_name = os.path.join(DUMP_DIR,self.file_name+POSTING_LIST_FILENAME_POSTFIX)
         if not os.path.exists(posting_list_file_name):
-            print('loaded dumped file from {}'.format(posting_list_file_name))
+            print('generating posting list:')
             return self.gen_posting_list()
         else:
-            print('generating posting list:')
+            print('loading dumped file from {}'.format(posting_list_file_name))
             return Array_List(posting_list_file_name)
     
+
+
     def gen_posting_list(self):
         num_term = len(self.id2term_dict)
-        temp_posting_list = []
-        for _ in range(num_term):
-            temp_posting_list.append([])
+
+        posting_list_file_name = os.path.join(DUMP_DIR,self.file_name+POSTING_LIST_FILENAME_POSTFIX)
+        posting_list = Array_List(posting_list_file_name)
+
+        from multiprocessing import Pool
+        from multiprocessing import Manager
         
-        for i in range(self.num_doc):
+        # pool = Pool(processes = 4)
+        # with Manager() as manager:
+        #     temp_posting_list = manager.list()
+        #     print('Initialize List')
+        #     for i in range(num_term):
+        #         print('\r[%d/%d]:   %.3f%%' % (i+1,num_term,(i+1)/num_term * 100),end='')
+        #         temp_posting_list.append(np.array([],dtype = np.uint16))
+
+        #     print('\nGenerating List')
+
+
+        #     for i in range(self.num_doc):
+        #         pool.apply_async(multi_posting,args=(self,temp_posting_list,i))
+        #     pool.close()
+        #     pool.join()
+
+        #     print('\nWriting Array List')
+        #     for term_id in range(num_term):
+        #         print('\r[%d/%d]:   %.3f%%' % (term_id+1,num_term,(term_id+1)/num_term * 100),end='')
+        #         posting_list.insert_array(np.array(temp_posting_list[term_id],dtype=np.uint32))
+        #     print('')
+        #     posting_list.save_file()
+        #     return posting_list
+        # 1 process
+        temp_posting_list = []
+        print('Initialize List')
+        for i in range(num_term):
+            print('\r[%d/%d]:   %.3f%%' % (i+1,num_term,(i+1)/num_term * 100),end='')
+            temp_posting_list.append([])
+
+        print('\nGenerating List')
+        for i in range(self.num_doc):        
             print('\r[%d/%d]:   %.3f%%' % (i+1,self.num_doc,(i+1)/self.num_doc * 100),end='')
             term_id_list,_ = self.get_term_list_and_link_list(i)
+            # print(term_id_list[:10])
             for term_id in term_id_list:
                 if (len(temp_posting_list[term_id]) == 0):
                     temp_posting_list[term_id].append(i)
-                elif(temp_posting_list[term_id][-1] != i):
+                elif not i in temp_posting_list[term_id]:
                     temp_posting_list[term_id].append(i)
-        posting_list_file_name = os.path.join(DUMP_DIR,self.file_name+POSTING_LIST_FILENAME_POSTFIX)
-        posting_list = Array_List(posting_list_file_name)
         for term_id in range(num_term):
+            print('\r[%d/%d]:   %.3f%%' % (term_id+1,num_term,(term_id+1)/num_term * 100),end='')
             posting_list.insert_array(np.array(temp_posting_list[term_id],dtype=np.uint32))
+        print('')
         posting_list.save_file()
         return posting_list
 
-
+def multi_posting(ph,temp_posting_list,input_i):
+    i = input_i
+    print('\r[%d/%d]:   %.3f%%' % (i+1,ph.num_doc,(i+1)/ph.num_doc * 100),end='')
+    term_id_list,_ = ph.get_term_list_and_link_list(i)
+    for term_id in term_id_list:
+        if (len(temp_posting_list[term_id]) == 0):
+            temp_posting_list[term_id] = np.append(temp_posting_list[term_id],i)
+            # print(temp_posting_list[i])
+        elif not i in temp_posting_list[term_id]:
+            temp_posting_list[term_id] = np.append(temp_posting_list[term_id],i)
+            # print('terid:',temp_posting_list[term_id])
+        else:
+            # print('111')
+            pass
 
 if __name__ == '__main__':
-    ph = Posting_handler('pages.xml')
+    ph = Posting_handler('pages_sample_big.xml')
     print('-------------------------------------------------')
     
     # the term frequency for term with id = 1700 in doc with id = 2
@@ -383,7 +433,7 @@ if __name__ == '__main__':
     print('\033[0;34mThe inversed document frequency of the term with id=1700:\033[0m\n%f' % ph.idf(1700)) # recommended
 
     # the link set for doc with id = 2
-    print('\033[0;34mThe link list for doc with id = 2:\033[0m\n{}'.format(ph.link_list(2)))
+    # print('\033[0;34mThe link list for doc with id = 2:\033[0m\n{}'.format(ph.link_list(2)))
 
     # the length of document with id = 3
     print('\033[0;34mThe length of document with id = 3:\033[0m\n%d' % (ph.dl(3)))
@@ -392,13 +442,13 @@ if __name__ == '__main__':
     print('\033[0;34mThe average document length:\033[0m\n%f' % ph.avgdl)
 
     # the term whose id is 1700
-    print('\033[0;34mThe term whose id is 1700:\033[0m\n%s' % ph.get_term_by_id(1700))
+    # print('\033[0;34mThe term whose id is 1700:\033[0m\n%s' % ph.get_term_by_id(1700))
     
     # the term id for 'redirect'
-    print("\033[0;34mThe term id for 'redirect':\033[0m\n%d" % ph.get_id_by_term('boy'))
+    print("\033[0;34mThe term id for 'boy':\033[0m\n%d" % ph.get_id_by_term('boy'))
 
     # the posting list for 'redirect'
-    print("\033[0;34mThe posting list for 'redirect':\033[0m\n{}".format(ph.posting_list(ph.get_id_by_term('boy'))))
+    print("\033[0;34mThe posting list for 'boy':\033[0m\n{}".format(ph.posting_list(ph.get_id_by_term('boy'))))
 
     # the posting list for term with id=1700
     print("\033[0;34mThe posting list for the term whose id is 1700:\033[0m\n{}".format(ph.posting_list(1700)))

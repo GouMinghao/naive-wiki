@@ -76,7 +76,7 @@ class Searcher(object):
         for i, doc_id in enumerate(docs):
 
             s = score_fn(query_, doc_id)
-            print("score: ", s, " doc id: ",doc_id)
+            # print("score: ", s, " doc id: ",doc_id)
             if i >= top_k:
                 q.get()
             q.put((s, doc_id))

@@ -4,6 +4,7 @@
 abstract.xml
 pages.xml
 pages_sample.xml
+pages_sample_big.xml
 dump_test.py
 *.pyc
 /.vscode/
