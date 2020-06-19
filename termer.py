@@ -1,5 +1,5 @@
 # coding=utf-8
-# authour: wang xi
+# author: wang xi
 
 """Termer for a sentence."""
 DUMP_DIR = '__PKL__'

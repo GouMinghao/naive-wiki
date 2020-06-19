@@ -1,3 +1,4 @@
+# Author: Minghao Gou
 fr = open('pages.xml','rb')
 fw = open('pages_sample_big.xml','wb')
 total_size = 76927677600

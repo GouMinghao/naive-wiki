@@ -1,5 +1,5 @@
 # coding=utf-8
-# authour: wang xi
+# author: wang xi
 
 """Search for a query using different scoring methods. Return top 10 documents."""
 

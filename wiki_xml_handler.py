@@ -1,3 +1,4 @@
+# author: Minghao Gou
 DUMP_DIR = '__PKL__'
 STATE_OUTSIDE = 0
 STATE_INSIDE = 1

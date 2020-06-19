@@ -1,5 +1,5 @@
 # coding=utf-8
-# authour: wang xi
+# author: wang xi
 
 """Determine a score for a doc-query pair."""
 

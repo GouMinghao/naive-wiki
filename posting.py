@@ -1,3 +1,4 @@
+# author: Minghao Gou
 DUMP_DIR = '__PKL__'
 TF_LIST_FILENAME_POSTFIX = '_tf.pkl'
 DF_LIST_FILENAME_POSTFIX = '_df.npy'
