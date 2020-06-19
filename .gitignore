@@ -9,3 +9,4 @@ dump_test.py
 *.pyc
 /.vscode/
 templates/doc.txt
+templates/output.html
