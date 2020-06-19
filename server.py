@@ -4,7 +4,7 @@ from typing import List, Sequence
 import os
 
 import re
-
+import datetime
 from wiki_xml_handler import wiki_xmlhandler
 
 from nltk.tokenize import word_tokenize
@@ -68,8 +68,19 @@ def doc(query):
 
 
 def get_list(query:str):
+    search_algorithm = 'tf-idf'
+    #search_algorithm = 'jaccard'
+    #search_algorithm = 'log_freq'
+    #search_algorithm = 'cosine_similarity'
+    #search_algorithm = 'bm25'
+    print("method: %s" %(search_algorithm), end='    ')
 
-    return (searchers.search(query))
+    start_time = datetime.datetime.now()
+    result = searchers.search(query, method=search_algorithm)
+    search_time = datetime.datetime.now() - start_time
+    print("search time: %f" % (search_time))
+
+    return result
 
 def process_query(query: str) -> List[str]:
     """Process query. Remove stop words and transform
