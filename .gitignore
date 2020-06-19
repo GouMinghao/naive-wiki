@@ -8,3 +8,4 @@ pages_sample_big.xml
 dump_test.py
 *.pyc
 /.vscode/
+templates/doc.txt

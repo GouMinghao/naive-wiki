@@ -5,6 +5,7 @@ import os
 
 import re
 import datetime
+import time
 from wiki_xml_handler import wiki_xmlhandler
 
 from nltk.tokenize import word_tokenize
@@ -68,16 +69,16 @@ def doc(query):
 
 
 def get_list(query:str):
-    search_algorithm = 'tf-idf'
-    #search_algorithm = 'jaccard'
-    #search_algorithm = 'log_freq'
-    #search_algorithm = 'cosine_similarity'
-    #search_algorithm = 'bm25'
+    # search_algorithm = 'tf-idf'
+    # search_algorithm = 'jaccard'
+    search_algorithm = 'log_freq'
+    # search_algorithm = 'cosine_similarity'
+    # search_algorithm = 'bm25'
     print("method: %s" %(search_algorithm), end='    ')
 
-    start_time = datetime.datetime.now()
+    start_time = time.time()
     result = searchers.search(query, method=search_algorithm)
-    search_time = datetime.datetime.now() - start_time
+    search_time = time.time() - start_time
     print("search time: %f" % (search_time))
 
     return result
@@ -105,7 +106,7 @@ def process_query(query: str) -> List[str]:
         if t_stem in stop_words:
             continue
         query.append(t_stem)
-    print("query:", query)
+    # print("query:", query)
     return query,original_query
 
 
@@ -120,14 +121,14 @@ def gen_list_html(docs: list, terms: str, original_query: list):
         # for term in terms:
         #     title = title.replace(term, '<em><font color="red">{}</font></em>'.format(term))
         #     wikitext = wikitext.replace(term, '<em><font color="red">{}</font></em>'.format(term))
-        print('original query',original_query)
+        # print('original query',original_query)
         for query_word in original_query:
             title = re.sub(query_word, matchcase(query_word), title, flags=re.IGNORECASE)
             # wikitext = re.sub(query_word, matchcase(query_word), wikitext, flags=re.IGNORECASE)
             # title = title.replace(query_word, '<em><font color="red">{}</font></em>'.format(query_word))
             # wikitext = wikitext.replace(query_word, '<em><font color="red">{}</font></em>'.format(query_word))
         # title = title.capitalize()
-        print(title)
+        # print(title)
 
         result.append((doc_id, title, wikitext))
     return result
